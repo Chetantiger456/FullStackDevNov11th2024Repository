@@ -1,0 +1,29 @@
+services:
+  app:
+    image: chetantiger456/deptmarch:0.0.1
+    ports:
+      - "9090:9090"
+    environment:
+      # Whole db object name is provided in the place of host name
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/deptdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:     # Whole db container object
+    image: mysql:latest
+    container_name: mysql-db
+    restart: always
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: deptdb
+      MYSQL_PASSWORD: root  # Only for root user
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 3
+      timeout: 5s
